@@ -4,9 +4,9 @@ import TableComp from './Components/TableComp'
 function App() {
 
   return (
-    <>
+    <div>
     <TableComp></TableComp>
-    </>
+    </div>
   )
 }
 

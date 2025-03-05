@@ -1,4 +1,4 @@
-import { Table } from "antd";
+import { Select, Table } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -13,9 +13,9 @@ export default function TableComp() {
       dataIndex: "title",
     },
     {
-        title: "Price",
-        dataIndex: "price",
-      },
+      title: "Price",
+      dataIndex: "price",
+    },
   ]);
   const [dataSource, setDataSource] = useState([]);
 
@@ -26,11 +26,21 @@ export default function TableComp() {
   }, []);
 
   return (
-    <div className="w-[80%] mx-auto mt-14 overflow-x-auto">
+    <div className="w-[80%] mx-auto my-14 overflow-x-auto">
       <h1 className="font-semibold text-center text-2xl my-12">
         Ant Design Table
       </h1>
-      <Table columns={columns} dataSource={dataSource}></Table>
+      <div className="border-4 rounded-xl p-12 shadow-xl">
+        <div className="flex justify-end p-5">
+            <Select placeholder="Columns" style={{width:100,textAlign:"center",}} >
+            {columns.map((column, i) => (
+              <Select.Option key={i} value={column.title} >
+                {column.title}
+              </Select.Option>
+            ))}            </Select>
+        </div>
+        <Table columns={columns} dataSource={dataSource}></Table>
+      </div>
     </div>
   );
 }
