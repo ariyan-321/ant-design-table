@@ -95,11 +95,12 @@ export default function TableComp() {
         </div>
         {/* Table */}
         <Table
+        
           columns={filteredColumns}
           loading={loading}
           dataSource={dataSource}
           rowKey="id"
-          
+          scroll={{ y: 400 }}
         />
       </div>
     </div>
