@@ -28,6 +28,8 @@ export default function TableComp() {
   // For storing data
   const [dataSource, setDataSource] = useState<Product[]>([]);
 
+
+  
   // Storing visible columns in localStorage
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
     () => JSON.parse(localStorage.getItem("visibleColumns") || "[]").length > 0
