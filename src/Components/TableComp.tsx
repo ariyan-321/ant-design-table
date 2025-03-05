@@ -1,9 +1,22 @@
 import { Select, Table } from "antd";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { Provider, useEffect, useState } from "react";
+
+
+interface Product{
+    id:number,
+    title:string,
+    price:number
+}
+
+interface ColumnType{
+    title:string,
+    dataIndex:keyof Product;
+}
+
 
 export default function TableComp() {
-  const [columns, setColumns] = useState([
+  const [columns, setColumns] = useState<ColumnType[]>([
     {
       title: "Id",
       dataIndex: "id",
@@ -17,11 +30,25 @@ export default function TableComp() {
       dataIndex: "price",
     },
   ]);
-  const [dataSource, setDataSource] = useState([]);
+  const [dataSource, setDataSource] = useState<Product[]>([]);
+
+
+  const[visible,setVisible]=useState<string[]>(
+    columns.map(col=> col.dataIndex)
+  )
+
+
+  const handleToggle=(columnKey:string)=>{
+    setVisible(prev=>prev.includes(columnKey)? prev.filter(col=> col!==columnKey):[...prev,columnKey])
+  }
+
+  
+
+
 
   useEffect(() => {
     axios
-      .get("https://api.escuelajs.co/api/v1/products")
+      .get<Product[]>("https://api.escuelajs.co/api/v1/products")
       .then((res) => setDataSource(res.data));
   }, []);
 
