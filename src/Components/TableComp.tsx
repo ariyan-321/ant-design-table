@@ -23,7 +23,9 @@ export default function TableComp() {
 
   const [dataSource, setDataSource] = useState<Product[]>([]);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
-    columns.map((col) => col.dataIndex)
+    () =>
+      JSON.parse(localStorage.getItem("visibleColumns") || "[]") ||
+      columns.map((col) => col.dataIndex)
   );
 
   useEffect(() => {
@@ -33,11 +35,16 @@ export default function TableComp() {
   }, []);
 
   const handleToggle = (columnKey: string) => {
-    setVisibleColumns((prev) =>
-      prev.includes(columnKey)
+    setVisibleColumns((prev) => {
+      const newVisibleColumns = prev.includes(columnKey)
         ? prev.filter((col) => col !== columnKey)
-        : [...prev, columnKey]
-    );
+        : [...prev, columnKey];
+        localStorage.setItem("visibleColumns",JSON.stringify(newVisibleColumns))
+
+        return newVisibleColumns;
+    });
+
+
   };
 
   const filteredColumns = columns.filter((col) =>
