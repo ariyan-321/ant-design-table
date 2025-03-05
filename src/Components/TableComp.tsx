@@ -42,7 +42,7 @@ export default function TableComp() {
     setVisible(prev=>prev.includes(columnKey)? prev.filter(col=> col!==columnKey):[...prev,columnKey])
   }
 
-  
+  const filteredCol=columns.filter(col=> visible.includes(col.dataIndex))
 
 
 
