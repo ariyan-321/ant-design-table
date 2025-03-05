@@ -21,7 +21,13 @@ export default function TableComp() {
     { title: "Price", dataIndex: "price" },
   ]);
 
+  const [loading, setLoading] = useState<boolean>(true);
+
   const [dataSource, setDataSource] = useState<Product[]>([]);
+
+
+ 
+
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
     () =>
       JSON.parse(localStorage.getItem("visibleColumns") || "[]") ||
@@ -29,9 +35,11 @@ export default function TableComp() {
   );
 
   useEffect(() => {
+    setLoading(true);
     axios
       .get<Product[]>("https://api.escuelajs.co/api/v1/products")
       .then((res) => setDataSource(res.data));
+      setLoading(false);
   }, []);
 
   const handleToggle = (columnKey: string) => {
@@ -39,12 +47,10 @@ export default function TableComp() {
       const newVisibleColumns = prev.includes(columnKey)
         ? prev.filter((col) => col !== columnKey)
         : [...prev, columnKey];
-        localStorage.setItem("visibleColumns",JSON.stringify(newVisibleColumns))
+      localStorage.setItem("visibleColumns", JSON.stringify(newVisibleColumns));
 
-        return newVisibleColumns;
+      return newVisibleColumns;
     });
-
-
   };
 
   const filteredColumns = columns.filter((col) =>
@@ -79,7 +85,12 @@ export default function TableComp() {
             </Button>
           </Dropdown>
         </div>
-        <Table columns={filteredColumns} dataSource={dataSource} rowKey="id" />
+        <Table
+          columns={filteredColumns}
+          loading={loading}
+          dataSource={dataSource}
+          rowKey="id"
+        />
       </div>
     </div>
   );
