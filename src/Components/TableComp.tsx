@@ -31,8 +31,9 @@ export default function TableComp() {
   // Storing visible columns in localStorage
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
     () =>
-      JSON.parse(localStorage.getItem("visibleColumns") || "[]") ||
-      columns.map((col) => col.dataIndex)
+      JSON.parse(localStorage.getItem("visibleColumns") || "[]").length > 0
+        ? JSON.parse(localStorage.getItem("visibleColumns") || "[]")
+        : columns.map((col) => col.dataIndex)
   );
 
   // Data fetching
