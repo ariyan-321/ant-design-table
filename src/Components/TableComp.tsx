@@ -16,14 +16,15 @@ const columns: TableColumnsType<Product> = [
   { title: 'Price', dataIndex: 'price', key: 'price' },
 ];
 
-const defaultCheckedList = columns.map((item) => item.key);
+const defaultCheckedList = columns
+  .filter(item => item.key)  
+  .map(item => item.key as string);  
 
 const TableComp: React.FC = () => {
   const [checkedList, setCheckedList] = useState<string[]>(defaultCheckedList);
   const [dataSource, setDataSource] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Fetch data from the API
   useEffect(() => {
     setLoading(true);
     axios
@@ -41,18 +42,18 @@ const TableComp: React.FC = () => {
     value: key,
   }));
 
-  // Filter columns based on checkedList
-  const newColumns = columns.map((item) => ({
-    ...item,
-    // Show or hide columns based on the checkedList
-    hidden: !checkedList.includes(item.key),
-  }));
+  const newColumns = columns
+    .filter((item) => item.key)  
+    .map((item) => ({
+      ...item,
+      hidden: !checkedList.includes(item.key as string), 
+    }));
 
   const columnMenu = (
-    <Menu style={{display:"flex"}} >
-      <Menu.Item key="checkbox-group" >
+    <Menu>
+      <Menu.Item key="checkbox-group">
         <Checkbox.Group
-        style={{display:"flex",flexDirection:"column"}}
+          style={{ display: 'flex', flexDirection: 'column' }}
           value={checkedList}
           options={options as CheckboxOptionType[]}
           onChange={(value) => {
@@ -66,9 +67,11 @@ const TableComp: React.FC = () => {
   return (
     <>
       <Divider>Columns displayed</Divider>
-      <Dropdown overlay={columnMenu} trigger={['click']}>
-        <Button icon={<DownOutlined />}>Select Columns</Button>
-      </Dropdown>
+      <div className="flex justify-end items-end m-5">
+        <Dropdown overlay={columnMenu} trigger={['click']}>
+          <Button icon={<DownOutlined />}>Select Columns</Button>
+        </Dropdown>
+      </div>
       <Table<Product>
         columns={newColumns.filter((col) => !col.hidden)} // Only show visible columns
         dataSource={dataSource}
