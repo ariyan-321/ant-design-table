@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Checkbox, Divider, Table, Dropdown, Menu, Button } from 'antd';
-import type { CheckboxOptionType, TableColumnsType } from 'antd';
-import axios from 'axios';
-import { DownOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from "react";
+import { Checkbox, Divider, Table, Dropdown, Menu, Button } from "antd";
+import type { CheckboxOptionType, TableColumnsType } from "antd";
+import axios from "axios";
+import { DownOutlined } from "@ant-design/icons";
 
 interface Product {
   id: number;
@@ -11,24 +11,30 @@ interface Product {
 }
 
 const columns: TableColumnsType<Product> = [
-  { title: 'Product ID', dataIndex: 'id', key: 'id' },
-  { title: 'Title', dataIndex: 'title', key: 'title' },
-  { title: 'Price', dataIndex: 'price', key: 'price' },
+  { title: "Product ID", dataIndex: "id", key: "id" },
+  { title: "Title", dataIndex: "title", key: "title" },
+  { title: "Price", dataIndex: "price", key: "price" },
 ];
 
-const defaultCheckedList = columns
-  .filter(item => item.key)  
-  .map(item => item.key as string);  
+const getCheckedListFromLocalStorage = () => {
+  const savedCheckedList = localStorage.getItem("checkedColumns");
+  if (savedCheckedList) {
+    return JSON.parse(savedCheckedList);
+  }
+  return columns.map((item) => item.key as string);
+};
 
 const TableComp: React.FC = () => {
-  const [checkedList, setCheckedList] = useState<string[]>(defaultCheckedList);
+  const [checkedList, setCheckedList] = useState<string[]>(
+    getCheckedListFromLocalStorage()
+  );
   const [dataSource, setDataSource] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     setLoading(true);
     axios
-      .get<Product[]>('https://api.escuelajs.co/api/v1/products')
+      .get<Product[]>("https://api.escuelajs.co/api/v1/products")
       .then((response) => {
         setDataSource(response.data);
       })
@@ -37,23 +43,27 @@ const TableComp: React.FC = () => {
       });
   }, []);
 
+  useEffect(() => {
+    localStorage.setItem("checkedColumns", JSON.stringify(checkedList));
+  }, [checkedList]);
+
   const options = columns.map(({ key, title }) => ({
     label: title,
     value: key,
   }));
 
   const newColumns = columns
-    .filter((item) => item.key)  
+    .filter((item) => item.key)
     .map((item) => ({
       ...item,
-      hidden: !checkedList.includes(item.key as string), 
+      hidden: !checkedList.includes(item.key as string),
     }));
 
   const columnMenu = (
     <Menu>
       <Menu.Item key="checkbox-group">
         <Checkbox.Group
-          style={{ display: 'flex', flexDirection: 'column' }}
+          style={{ display: "flex", flexDirection: "column" }}
           value={checkedList}
           options={options as CheckboxOptionType[]}
           onChange={(value) => {
@@ -68,15 +78,16 @@ const TableComp: React.FC = () => {
     <>
       <Divider>Columns displayed</Divider>
       <div className="flex justify-end items-end m-5">
-        <Dropdown overlay={columnMenu} trigger={['click']}>
+        <Dropdown overlay={columnMenu} trigger={["click"]}>
           <Button icon={<DownOutlined />}>Select Columns</Button>
         </Dropdown>
       </div>
       <Table<Product>
-        columns={newColumns.filter((col) => !col.hidden)} // Only show visible columns
+        columns={newColumns.filter((col) => !col.hidden)}
         dataSource={dataSource}
         loading={loading}
         rowKey="id"
+        sticky={true}
         style={{ marginTop: 24 }}
       />
     </>
